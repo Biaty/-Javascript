@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    /*
+        `promise` => 承诺
+
+        解决异步编程问题, 同步是(),异步是(),
+        牵扯到了异步队列 和主线程微任务宏任务
+        是es6的一个语法,内部有三个状态(pending,fulfiled或rejected),状态改变只能一次,只能是从pending->fulfiled或者pending->rejected,
+
+        promise会返回一个对象,对象会加状态(pending,resolved,rejected)
+        失败进catch 成功进then 
+
+        then方法有两个参数,一个成功resolve一个失败reject,
+
+        .then里  再return 不会报错 相当于return了一个{} 
+                throw 是抛出异常   说明代码错误  进catch 
+        .then后的返回结果美誉返回值时,返回结果undefind
+
+        .then和.chatch 的返回值不能是promise本身,要不会造成死循环
+
+        promise resolve的值会穿透
+
+        promise.all
+        promise.race
+        promise.resolve
+        
+
+
+
+
+        // 结构
+                            // 成功 , 失败
+        new Promise(function(resolve,reject){
+            resolve(5)
+        };
+        p.then(function(data){
+            console.log(data)
+        })
+
+        then中的才为promise的微任务 ,then中为同步
+
+        .then(console.log)
+        .then()中只能插函数    不是函数就穿透 穿透到下一项函数 如果没有直接->变量数字
+        如果是函数  最后log接受的是最后一个函数的返回值 
+
+
+        失败成功只执行一次, 执行后状态无法改变 ,
+        一旦 成功resolve 就不会进catch
+
+
+
+
+
+        // try catch (失败 报失败) 确保报错时可以从catch执行reject
+
+        try{
+
+        }catch(e){
+            reject(e)
+        }
+
+       
+
+
+        
+    */
+
+    //1
+    // let a = 10;
+    // setTimeout(() => {
+    //     a = 20;
+    // }, 1000);
+    // console.log(a)
+    
+    // 2
+    //  10 -> 20 ->1000   先主 然后promise.then,then中同步20->1000
+    // let a = 10;
+
+    // let p = new Promise((resolve,reject)=>{
+    //     setTimeout(() => {
+    //         a = 20;
+    //         //resolve(a)
+    //         try{
+
+    //         }catch(e){
+    //             reject(e)
+    //         }
+    //     }, 1000);
+    // })
+    // p.then(function(a){
+    //     console.log(a)
+    //     console.log(1000)   // 20 ->1000  then中为同步 
+    // })
+
+
+
+    
+    // console.log(a)  // 10
+
+
+    // 3 
+    let p = new Promise((resolve,reject)=>{
+            // resolve(1);
+            reject(2);
+        });
+
+        p.then((val)=>{
+            console.log(val)
+        },(val2)=>{
+            console.log(val2)  //2
+        })
+
+</script> 
+</body>
+</html>

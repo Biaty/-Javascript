@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    /*
+    
+    then中包含两个函数   第一个函数=>成功后的回调
+                        第二个函数=>失败后的
+        
+    当进第一个then时 , d=> 返回后的数据, 但这个数据是被promise包了一层
+
+
+
+    第一个then的返回值 是第二个then的参数
+    d.json() -> '[]'   // 不全
+
+
+    then的第二个参数为失败函数,也可以不用写
+    
+
+
+    json => 长的像对象和数组的字符串, 本质是字符串
+    json 转 对象    JSON.parse()        // parse必须为标准格式的json格式   '{"":""}'   才能成功转化
+    对象 转 json    json.stringify()   //副作用是 函数和undefined 的会被过滤掉
+
+    '[]' -> []
+    '{}' -> {}
+
+
+
+
+
+    finally 
+
+
+    
+
+    */
+    // 从 pending状态 到 resolve 或者 reject 不可逆 
+    let p = new Promise((resolve,reject)=>{
+        setTimeout(() => {
+            resolve({
+                data:'{"name":"珠峰"}',
+                json:function(){
+                    return JSON.parse(this.data)  //data: "{"name":"珠峰"}", json: ƒ}
+                }
+            })
+        }, 2000);
+    });
+
+    p.then(function(d){
+        console.log(d)
+        console.log(d.json) //
+        return d.json()
+        
+    })
+    .then(function(d){
+        console.log(d) // {name: "珠峰"}   -> json是字符串,把json转成对象用JSON.parse
+    })
+    
+    
+</script>
+</body>
+</html>
