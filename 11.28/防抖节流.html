@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+    /*
+    1:(停下来才触发) 防抖
+        滚动停止下来的时候再触发
+        当频率很高触发事件的时候都不执行事件函数中的 代码
+        只有停下来时再执行
+        (滚轮滚一下会触发好多下,或者滚着玩)会导致一直在请求,需要防抖
+    2:  (降低频率) 节流
+        每隔固定时间再触发这个事件 ,比如每隔200s再加载图片
+    
+    
+    
+    */  
+
+
+    window.onscroll = debounce(fn,200)
+
+    // 防抖
+   function fn(){
+       console.log(1)
+   }
+
+   // 此时形成闭包  子机能够获取到父级的变量
+   // cb =>  callback   time=>延迟时间  
+   function debonce(cb,time){
+        let timer;
+        return function(){
+            //  做个判断. 当事件触发时 就先关闭上次的timer
+            if(timer){
+                clearTimeout(timer)
+            }
+            timer = setTimeout(() => {
+                cb()
+            }, (time));
+        }
+   }
+
+
+   window.onscroll = debonce(fn,200)
+
+   function fn(ev){
+       console.log(ev)
+       console.log(this) // this是window   箭头函数this指向上文的函数
+   }
+   function debonce(cb,time){
+        let timer;
+        return function(...ary){
+            if(timer){
+                clearTimeout(timer)
+            }
+            timer => setTimeout(() => {
+                cb.call(this,...ary)
+            }, time);
+        }
+
+   }
+
+
+
+
+   //节流
+   function throttling(cb,time){
+       let prevtime = 0;
+       return function(){
+           //现在的时间
+           let nowtime = +new Date;
+
+           // 现在的时间 - 刚才的时间 = 用了的时间
+           // 如果用的了时间 大于 传进来的时间  cb执行
+           if(nowTime - prevtime > time){
+                cb()
+           }
+           // 造成一个循环 每一次的prevtime 等于 上一次的nowtime
+           prevtime = nowtime
+       }
+
+   }
+
+
+
+   function throttling(cb,time){
+       let prevtime = 0;
+       return function(...ary){
+           let nowTime = +new Date;
+
+           if(nowTime - prewtime > time){
+               cb.call(this,...ary)
+           }else{
+                timer = setTimeout(() => {
+                    if(nowTime - prvtime > time){
+                        cb.call(this,...ary)
+                    }
+                }, time);
+           }
+           prewtime = nowTime
+       }
+   }
+
+    
+</script>
+</body>
+</html>
