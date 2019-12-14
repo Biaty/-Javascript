@@ -3,9 +3,10 @@ var router = express.Router();
 
 /* GET users listing. */
 /*
-  
+  已经注册成的用户名
 */
 let person = [
+  "fuwuqijun",
  "yuhaiyang",
  "lintonghe",
  "zhaodan",
