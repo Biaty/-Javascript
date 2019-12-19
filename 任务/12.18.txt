@@ -1,0 +1,5 @@
+跨域相关知识
+
+promise系列
+	手写promise	
+	jsonp 的promise
