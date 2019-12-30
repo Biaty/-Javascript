@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app">
+        <h1>{{name}}</h1>
+    </div>
+</body>
+<!-- vuex的用处  -->
+<!-- 下载对应的vuex  npm i vuex --save 
+ 引入同路径下的某某 用./ 路径来写   在同级不加./是node.modusl下的文件
+ export default 导出一个文件
+ vuex.store 表示new了一个vuex导出的一个仓库
+
+ 在main.js中引入配置文件 import xxx from './xxx'
+ 在vue实例当中应用对应的内容  
+ -->
+</html>
+<script src="./node_modules/vue/dist/vue.js"></script>
+<script>
+    let vm = new Vue({
+        el: '#app',
+        data: {
+            name: "陈勃霖"
+        }
+    })
+</script>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app">
+        <h1>{{name}}</h1>
+        <h2>{{count}}</h2>
+        <button @click='fn'>增加</button>
+        <button @click='fn1'>减少</button>
+    </div>
+</body>
+
+</html>
+<script src="../node/node_modules/vue/dist/vue.js"></script>
+<script src="../node/node_modules/vuex/dist/vuex.js"></script>
+<script>
+    const store = new Vuex.Store({
+        state: {
+            count: 0
+        },
+        mutations: {
+            changeCount(state, options) {
+                state.count += options;
+            }
+        },
+        actions: { //异步操作
+            // actions 只有两个参数 context options
+
+            changeFn({
+                commit
+            }, options) {
+                setTimeout(() => {
+                    commit('changeCount', options)
+                }, 1000);
+            },
+
+            // getters: { // vuex的异步操作, 相当于计算属性
+            //     numType2(state) {
+            //         return state.count + 'hello'
+            //     },
+            //     numType(state, getters) {
+            //         return state.count % 2 == 0 ? '偶数' : '奇数'
+            //     }
+            // }
+        }
+    });
+
+
+
+    let vm = new Vue({
+        el: '#app',
+        data: {
+            name: "珠峰"
+        },
+        computed: {
+            count() {
+                return this.$store.state.count;
+            },
+            type() {
+                return this.$store.getters.numType;
+            }
+        },
+        methods: {
+            fn() {
+                this.$store.commie('changeCount', 1)
+            },
+            fn1() {
+                this.$store.dispatch('changeFn', -1)
+            }
+        },
+    });
+</script>

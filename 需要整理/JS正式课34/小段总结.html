@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        /*
+    tate 中存储的都是一些公用的数据
+mutations存储都是一些函数，vuex提供的可以修改state中的数据 【必须写同步】
+actions存储的都是一些函数，vuex提供的可以【写异步的方法】
+getters 是 vuex的计算属性
+1. mutations根据this.$store.commit('对应的函数名'，要传的参数),最多传两个参数，最少传一个参数，传一个参数时，必须是对应的函数名，【如果要传的参数很多，需要通过对象传参】
+2. actions根据this.$store.dispatch('对应的函数名'，要传的参数),最多传两个参数，最少传一个参数，传一个参数时，必须是对应的函数名，【如果要传的参数很多，需要通过对象传参】
+
+
+赵雪飞 前端 2019/5/29 19:48:21
+lucky 2019/05/29 19:48:21
+例如：使用action完成异步提交的操作
+<div id="app">
+        <h1>{{name}}</h1>
+        <input type="text" v-model='name' placeholder="姓名">
+        <input type="number" v-model='age' placeholder="年龄">
+        <button @click='fn'>提交</button> 当我点击提交的时候通过commit触发mutations中的函数，其中mutations中的函数是同步的
+        <button @click='fn2'>异步提交</button> 当我点击异步提交的时候通过commit触发actions中的函数，其中actions中的函数是异步的
+        <child></child>
+        <adult></adult>
+    		</div>
+
+两个组件，分别是adult 和 child
+<template id='adult'>
+    <div>
+        <h2>成年人</h2>
+        <ul>
+            <li v-for="(item,index) in ary" :key="index">
+                姓名：{{item.name}} <br>
+                年龄：{{item.age}}
+            </li>
+        </ul>
+    </div>
+</template>
+<template id='child'>
+    <div>
+        <h2>未成年人</h2>
+        <ul>
+            <li v-for="(item,index) in ary" :key="index">
+                姓名：{{item.name}} <br>
+                年龄：{{item.age}}
+            </li>
+        </ul>
+    </div>
+</template>
+
+正式的代码
+let adult = {
+        template: '#adult',
+        computed: {
+            ary() {
+                return this.$store.state.adultAry
+            }
+        },
+    };
+    let child = {
+        template: '#child',
+        computed: {
+            ary() {
+                return this.$store.state.childAry
+            }
+        },
+    };
+
+声明一个state用来存放公用的变量
+    const state = {
+        adultAry: [],
+        childAry: [] 声明两个数组用来存放提交的数据
+    }
+    
+muta、vue中规定的可以改变state中数据的方法
+    const mutations = {
+        changeAdult(state, options) {
+            state.adultAry.push(options.obj)
+        },
+        changeChild(state, options) {
+            state.childAry.push(options)
+        }
+    }
+
+赵雪飞 前端 2019/5/29 19:48:34
+lucky 2019/05/29 19:48:34
+const actions = {
+        // 这里边存储的也是一些函数，这里的函数可以是异步
+        // changeAdultFn(context,options){
+        //     // context 包含 commit函数 和state
+        //     console.log(arguments);
+        // },
+
+        changeAdultFn({commit},options){
+            // context 包含 commit函数 和state
+            // 从context中把commite解构出来
+            // 可以通过commit 触发 mutations中的函数
+            console.log(arguments);
+            axios.get('https://yesno.wtf/api').then((data)=>{
+                // 根据后台返回yes 或者 no 决定name属性后面跟的是男或者女
+                if(data.data.answer == 'yes'){
+                    options.name += '-男'
+                }else {
+                    options.name += '-女'
+                }
+                // 下一步 我们要使用 mutations中的方法，改变state中的数据
+                if(options.age >= 18){
+                    commit('changeAdult',{obj:options})
+                } else {
+                    commit('changeChild',options)
+                }
+                console.log(data.data.answer);
+            }).catch(()=>{
+                alert('失败')
+            })
+        },
+        getData(){
+            // 我们一般会把ajax请求都放到actions中管理
+            return axios.get('https://yesno.wtf/api')
+        }
+    }
+
+创建一个store的vuex.store的实例，用来存放数据
+    const store = new Vuex.Store({
+        state: state,
+        mutations,
+        actions
+    })
+
+    let vm = new Vue({
+        el: '#app',
+        store,  每一个组件中都有一个$store属性
+        components: {
+            adult,
+            child
+        },
+        data: {
+            name: "珠峰",
+            age: 0
+        },
+        methods: {
+            fn() {
+                // 根据 age 来判断把数据放到哪个数组中
+                let obj = {
+                    name: this.name,
+                    age: this.age
+                }
+                if (this.age >= 18) {
+                    this.$store.commit('changeAdult', {
+                        obj: obj,
+                        a: 12
+                    })
+                    this.name='',
+                    this.age=''
+                    //             传递的参数， 看自己的业务需求
+                } else {
+                    this.$store.commit('changeChild', obj)
+                    this.name='',
+                    this.age=''
+                }
+            },
+            fn2(){
+                let obj = {
+                    name: this.name,
+                    age: this.age
+                }
+                // 要触发actions中的函数：通过this.$store.dispatch('对应函数名', 要传的参数)
+                // this.$store.dispatch('changeAdultFn',{name:this.name,age:this.age} )
+                this.$store.dispatch('changeAdultFn',obj)
+
+                let p = this.$store.dispatch('getData')
+                console.log(p);
+                p.then((data)=>{
+                    // p 就是 axios返回Promise实例
+                    console.log(data);
+                    // data是ajax请求中得到的数据，不过axios把数据又用data包了一层
+                })
+            }
+        },
+    });
+
+赵雪飞 前端 2019/5/29 19:48:45
+例如：使用getters属性的  点击按钮减少或者增加
+<div id="app">
+        <h1>{{name}}</h1>
+        <h2>{{count}}是{{type}}</h2>
+        <button @click='fn'>增加<tton> 
+        <button @click='fn1'>减少<tton>
+</div>
+
+const store = new Vuex.Store({
+        state: { count: 0 },
+        mutations: {
+            changeCount(state, options) {
+                state.count += options;
+            }
+        },
+        actions: {
+ 因为actions里面存放的都是一些异步函数
+            changeFn({ commit }, options) {
+                // 这里边存储的也是一些函数，这里的函数可以是异步
+                // changeFn(context,options){
+                //    context 包含 commit函数 和state
+                //     console.log(arguments);
+                // },
+                // context里面包括state，commit一般解构出来
+                // 可以通过commit 触发 mutations中的函数
+                setTimeout(() => {
+                    commit('changeCount', options)  隔1秒触发changeCount函数，并且把options传过去
+                }, 1000);
+            }
+        },
+getters: {
+            // vuex 的计算属性  
+            // numType2(state){
+            //     return state.count + 'hello'
+            // },
+            numType(state, getters) {
+                // console.log(getters.numType2);
+                return state.count % 2 == 0 ? '偶数' : '奇数'   
+依赖于state中的count属性，当count发生改变时触发getters中的numType，并且把值返回给numType
+            }
+        }
+
+    })
+
+    let vm = new Vue({
+        el: '#app',
+        store,
+        data: {
+            name: "珠峰"
+        },
+        computed: {
+            count() { 
+  当state中的count的值发生改变时，触发计算属性中的count，并且把值返回给页面中使用count的标签
+                return this.$store.state.count;
+            },
+            type() {
+                return this.$store.getters.numType;   
+如果要依赖vuex.store中的getters属性中的值，必须是this.$sotre.getters.后面跟的是getters中的计算属性名字
+            }
+        },
+        methods: {
+            fn() {
+                this.$store.commit('changeCount', 1)  当我点击增加按钮时，触发fn函数，直接通过commit来触发mutations中的changeCount方法，并且把1传给options
+            },
+            fn1() {
+                this.$store.dispatch('changeFn', -1) 当我点击减少按钮时，触发fn1函数，通过dispatch来触发changeFn方法，并且把1传给options,在通过解构出来的commit方法来触发changeCount方法，把options传给changeCount方法中的options
+            }
+        }
+    })
+
+    
+    */
+    </script>
+</body>
+
+</html>
