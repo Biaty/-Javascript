@@ -28,7 +28,10 @@
                             <label 
                                 @dblclick="dbfn(val)"
                             >{{val.txt}}</label>
-                            <button class="destroy"></button>
+                            <button 
+                                class="destroy"  
+                                @click = rm(key)                          
+                            ></button></button>
                         </div>
                         <input 
                             class="edit"
@@ -41,7 +44,7 @@
             </section>
             <footer class="footer">
 	            <span class="todo-count">
-	            	<strong>0</strong>
+	            	<strong>{{wnum}}</strong>
 	            	<span>条未选中</span>
                 </span>
                 <ul 
@@ -143,6 +146,9 @@
                     }
                 })
                 this.esc = true;
+            },
+            rm(key){
+                this.ary = this.ary.filter((e,index)=>index!==key);
             }
         },
         computed: {
