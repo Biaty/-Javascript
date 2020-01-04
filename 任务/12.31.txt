@@ -1,0 +1,11 @@
+完成todo
+
+
+解决上课提到的问题
+
+v-model
+computed
+wacth
+
+
+父子组件传递
